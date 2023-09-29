@@ -2,62 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Video Speed Scrubber</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>HTML Video Player</title>
+  <link rel="stylesheet" href="gpt.css">
 </head>
 <body>
 
-  <div class="wrapper">
-    <video class="flex" width="765" height="430" src="http://clips.vorwaerts-gmbh.de/VfE_html5.mp4" controls></video>
-    <div class="speed">
-      <div class="speed-bar">1×</div>
-    </div>
-  </div>
+   <div class="wrapper">
+	   <div class="player">
+     <video id="player__video viewer" src="http://clips.vorwaerts-gmbh.de/VfE_html5.mp4"></video>
 
-<script  src="./script.js">
-  //Your code goes here
-	// Video player functionality
+     <div class="player__controls">
+       <div class="progress">
+        <div id="progress__filled"></div>
+       </div>
+       <button id="player__button toggle" title="Toggle Play">►</button>
+       <input type="range" name="volume" id="player__slider" min="0" max="1" step="0.05" value="1">
+       <input type="range" name="playbackRate" id="speed" min="0.5" max="2" step="0.1" value="1">
+       <button data-skip="-10" id="skip-backward">« 10s</button>
+       <button data-skip="25" id="skip-forward">25s »</button>
+     </div>
+   </div>
+   </div>
 
-// Get elements from the HTML
-const video = document.querySelector('.flex');
-const speedBar = document.querySelector('.speed-bar');
+  <script>
+	  // Get references to elements
+const video = document.getElementById("player__video viewer");
+const playPauseButton = document.getElementById("player__button toggle");
+const progress = document.getElementById("progress__filled");
+const volumeSlider = document.getElementById("player__slider");
+const speedSlider = document.getElementById("speed");
+const skipBackwardButton = document.getElementById("skip-backward");
+const skipForwardButton = document.getElementById("skip-forward");
 
-// Play/Pause functionality
+// Add event listeners
+video.addEventListener("click", togglePlay);
+playPauseButton.addEventListener("click", togglePlay);
+video.addEventListener("play", updateButton);
+video.addEventListener("pause", updateButton);
+video.addEventListener("timeupdate", updateProgress);
+volumeSlider.addEventListener("input", updateVolume);
+speedSlider.addEventListener("input", updateSpeed);
+skipBackwardButton.addEventListener("click", skipBackward);
+skipForwardButton.addEventListener("click", skipForward);
+progress.addEventListener("click", seek);
+
+// Define functions for the event listeners
 function togglePlay() {
-  if (video.paused) {
-    video.play();
-  } else {
-    video.pause();
-  }
+    if (video.paused) {
+        video.play();
+    } else {
+        video.pause();
+    }
 }
 
-// Update playback speed
-function handleSpeedChange() {
-  const speed = parseFloat(this.dataset.speed);
-  video.playbackRate = speed;
-  speedBar.textContent = speed + 'x';
+function updateButton() {
+    const icon = video.paused ? "Play" : "Pause";
+    playPauseButton.textContent = icon;
 }
 
-// Event listeners for video player
-video.addEventListener('click', togglePlay);
-video.addEventListener('play', () => speedBar.textContent = video.playbackRate + 'x');
-video.addEventListener('pause', () => speedBar.textContent = video.playbackRate + 'x');
+function updateProgress() {
+    const percent = (video.currentTime / video.duration) * 100;
+    progress.style.width = ${percent}%;
+}
+	  //wrapper
 
-const speedButtons = document.querySelectorAll('.speed .speed-bar');
-speedButtons.forEach(button => button.addEventListener('click', handleSpeedChange));
-
-// CSS variable handling
-
-const inputs = document.querySelectorAll('.controls input');
-
-function handleUpdate() {
-  const suffix = this.dataset.sizing || '';
-  document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
+function updateVolume() {
+    video.volume = volumeSlider.value;
 }
 
-inputs.forEach(input => input.addEventListener('change', handleUpdate));
-inputs.forEach(input => input.addEventListener('mousemove', handleUpdate));
+function updateSpeed() {
+    video.playbackRate = speedSlider.value;
+}
 
-</script>
+function skipBackward() {
+    video.currentTime -= 10; // Skip 10 seconds backward
+}
+
+function skipForward() {
+    video.currentTime += 10; // Skip 10 seconds forward
+}
+
+function seek(e) {
+    const seekTime = (e.offsetX / progress.clientWidth) * video.duration;
+    video.currentTime = seekTime;
+}
+
+  </script>
 </body>
 </html>
