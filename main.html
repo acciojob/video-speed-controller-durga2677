@@ -16,6 +16,48 @@
 
 <script  src="./script.js">
   //Your code goes here
+	// Video player functionality
+
+// Get elements from the HTML
+const video = document.querySelector('.flex');
+const speedBar = document.querySelector('.speed-bar');
+
+// Play/Pause functionality
+function togglePlay() {
+  if (video.paused) {
+    video.play();
+  } else {
+    video.pause();
+  }
+}
+
+// Update playback speed
+function handleSpeedChange() {
+  const speed = parseFloat(this.dataset.speed);
+  video.playbackRate = speed;
+  speedBar.textContent = speed + 'x';
+}
+
+// Event listeners for video player
+video.addEventListener('click', togglePlay);
+video.addEventListener('play', () => speedBar.textContent = video.playbackRate + 'x');
+video.addEventListener('pause', () => speedBar.textContent = video.playbackRate + 'x');
+
+const speedButtons = document.querySelectorAll('.speed .speed-bar');
+speedButtons.forEach(button => button.addEventListener('click', handleSpeedChange));
+
+// CSS variable handling
+
+const inputs = document.querySelectorAll('.controls input');
+
+function handleUpdate() {
+  const suffix = this.dataset.sizing || '';
+  document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
+}
+
+inputs.forEach(input => input.addEventListener('change', handleUpdate));
+inputs.forEach(input => input.addEventListener('mousemove', handleUpdate));
+
 </script>
 </body>
 </html>
